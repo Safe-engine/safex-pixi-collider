@@ -12,16 +12,3 @@ export function shouldCollider(colA: Collider, colB: Collider) {
   const { colliderMatrix } = GameWorld.Instance.systems.get(CollideSystem) as CollideSystem
   return colliderMatrix[groupA][groupB]
 }
-
-export class Size {
-  constructor(width, height) {
-    this.width = width
-    this.height = height
-  }
-  width: number
-  height: number
-}
-
-export function size(width: number, height: number) {
-  return new Size(width, height)
-}

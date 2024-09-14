@@ -1,14 +1,12 @@
+import { app, NodeComp, NoRenderComponentX } from '@safex/pixi'
 import chunk from 'lodash/chunk'
 import flatten from 'lodash/flatten'
 import max from 'lodash/max'
 import min from 'lodash/min'
 import { Graphics, Rectangle } from 'pixi.js'
 
-import { app } from '../../safex-pixi/safex'
-import { NodeComp } from '../../safex-pixi/src/gworld/components/NodeComp'
-import { NoRenderComponentX } from '../../safex-pixi/src/gworld/core/decorator'
-import { circleCircle, polygonCircle, polygonPolygon } from '../../safex-pixi/src/helper/Intersection'
 import { Size } from '../../safex-pixi/src/helper/utils'
+import { circleCircle, polygonCircle, polygonPolygon } from './helper/Intersection'
 
 function getNodeToWorldTransformAR(node: NodeComp) {
   const t = node.instance.worldTransform
