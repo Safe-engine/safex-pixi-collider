@@ -1,4 +1,4 @@
-import { app, NodeComp, NoRenderComponentX } from '@safex/pixi'
+import { app, NodeComp, NoRenderComponentX, Vec2 } from '@safex/pixi'
 import chunk from 'lodash/chunk'
 import flatten from 'lodash/flatten'
 import max from 'lodash/max'

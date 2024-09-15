@@ -11,8 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@safex/pixi": "workspace:*",
-    "entityx-ts": "workspace:^",
-    "pixi.js": "^7.2.4"
+    "@safex/pixi": "^1.0.0",
+    "entityx-ts": "^1.0.0",
+    "pixi.js": "^8.4.0"
   }
 }
