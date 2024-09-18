@@ -1,4 +1,4 @@
-import { GameWorld } from '@safex/pixi'
+import { GameWorld } from '@safe-engine/pixi'
 
 import { Collider } from '../CollideComponent'
 import { CollideSystem } from '../CollideSystem'

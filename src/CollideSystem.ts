@@ -1,4 +1,4 @@
-import { app, GameWorld, NodeComp } from '@safex/pixi'
+import { app, GameWorld, NodeComp } from '@safe-engine/pixi'
 import { EntityManager, System } from 'entityx-ts'
 import { ComponentAddedEvent, ComponentRemovedEvent, EventManager, EventReceive } from 'entityx-ts'
 import { Color, Graphics } from 'pixi.js'
