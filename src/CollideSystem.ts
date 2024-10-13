@@ -1,6 +1,6 @@
 import { app, GameWorld, NodeComp } from '@safe-engine/pixi'
-import { EntityManager, System } from 'entityx-ts'
-import { ComponentAddedEvent, ComponentRemovedEvent, EventManager, EventReceive } from 'entityx-ts'
+import { EntityManager, EventTypes, System } from 'entityx-ts'
+import { EventManager } from 'entityx-ts'
 import { Color, Graphics } from 'pixi.js'
 
 import { BoxCollider, CircleCollider, Collider, CollisionType, Contract, PolygonCollider } from './CollideComponent'
@@ -9,7 +9,18 @@ export function enabledDebugDraw(enable = true) {
   const collideSystem = GameWorld.Instance.systems.get(CollideSystem)
   collideSystem.enabledDebugDraw = enable
 }
-
+function onAddCollider({ entity, component }) {
+  console.log('ComponentAddedEvent', component)
+  const collider = entity.assign(new Collider(component))
+  collider.node = entity.getComponent(NodeComp)
+  component.node = entity.getComponent(NodeComp)
+  this.addCollider(collider)
+}
+function onRemoveCollider({ entity, component }) {
+  console.log('ComponentRemovedEvent', component)
+  const collider = entity.getComponent(Collider)
+  this.removeCollider.push(collider)
+}
 export class CollideSystem implements System {
   listColliders: Collider[] = []
   _contracts: Contract[] = []
@@ -19,47 +30,21 @@ export class CollideSystem implements System {
   enabled = true
 
   configure(event_manager: EventManager) {
-    event_manager.subscribe(ComponentAddedEvent(BoxCollider), this)
-    event_manager.subscribe(ComponentAddedEvent(CircleCollider), this)
-    event_manager.subscribe(ComponentAddedEvent(PolygonCollider), this)
-    event_manager.subscribe(ComponentRemovedEvent(BoxCollider), this)
-    event_manager.subscribe(ComponentRemovedEvent(CircleCollider), this)
-    event_manager.subscribe(ComponentRemovedEvent(PolygonCollider), this)
+    event_manager.subscribe(EventTypes.ComponentAdded, BoxCollider, onAddCollider)
+    event_manager.subscribe(EventTypes.ComponentAdded, CircleCollider, onAddCollider)
+    event_manager.subscribe(EventTypes.ComponentAdded, PolygonCollider, onAddCollider)
+    event_manager.subscribe(EventTypes.ComponentRemoved, BoxCollider, onRemoveCollider)
+    event_manager.subscribe(EventTypes.ComponentRemoved, CircleCollider, onRemoveCollider)
+    event_manager.subscribe(EventTypes.ComponentRemoved, PolygonCollider, onRemoveCollider)
     if (this.enabledDebugDraw) {
       this.debugGraphics = new Graphics()
-      this.debugGraphics.lineStyle(4, new Color('white'))
+      this.debugGraphics.setFillStyle({ color: new Color('white') })
+      this.debugGraphics.width = 4
       // this.debugGraphics.beginFill(new Color('white'))
       app.stage.addChild(this.debugGraphics)
     }
   }
 
-  receive(type: string, event: EventReceive) {
-    const ett = event.entity
-    const comp = event.component as Collider
-
-    switch (type) {
-      case ComponentAddedEvent(BoxCollider):
-      case ComponentAddedEvent(CircleCollider):
-      case ComponentAddedEvent(PolygonCollider): {
-        console.log('ComponentAddedEvent', comp)
-        const collider = ett.assign(new Collider(comp))
-        collider.node = ett.getComponent(NodeComp)
-        comp.node = ett.getComponent(NodeComp)
-        this.addCollider(collider)
-        break
-      }
-
-      case ComponentRemovedEvent(BoxCollider):
-      case ComponentRemovedEvent(CircleCollider):
-      case ComponentRemovedEvent(PolygonCollider): {
-        this.removeColliders.push(comp.getComponent(Collider))
-        break
-      }
-
-      default:
-        break
-    }
-  }
   update(entities: EntityManager, events: EventManager, dt: number) {
     if (!this.enabled) {
       return
@@ -100,7 +85,8 @@ export class CollideSystem implements System {
       draw.clear()
       draw.removeFromParent()
       app.stage.addChild(draw)
-      this.debugGraphics.lineStyle(4, new Color('white'))
+      this.debugGraphics.setFillStyle({ color: new Color('white') })
+      this.debugGraphics.width = 4
     }
     for (const entt of entities.entities_with_components(BoxCollider)) {
       const comp = entt.getComponent(BoxCollider)

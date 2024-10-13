@@ -1,11 +1,10 @@
-import { app, NodeComp, NoRenderComponentX, Vec2 } from '@safe-engine/pixi'
+import { app, NodeComp, NoRenderComponentX, v2 } from '@safe-engine/pixi'
 import chunk from 'lodash/chunk'
 import flatten from 'lodash/flatten'
 import max from 'lodash/max'
 import min from 'lodash/min'
-import { Graphics, Rectangle } from 'pixi.js'
+import { Graphics, Point, Rectangle, Size } from 'pixi.js'
 
-import { Size } from '../../safex-pixi/src/helper/utils'
 import { circleCircle, polygonCircle, polygonPolygon } from './helper/Intersection'
 
 function getNodeToWorldTransformAR(node: NodeComp) {
@@ -21,11 +20,11 @@ function cloneRect(origin: Rectangle) {
 }
 
 export class Collider extends NoRenderComponentX {
-  offset: Vec2
+  offset: Point
   tag: number
   enabled = true
-  _worldPoints: Vec2[] = []
-  _worldPosition: Vec2
+  _worldPoints: Point[] = []
+  _worldPosition: Point
   _worldRadius
   _AABB: Rectangle = new Rectangle(0, 0, 0, 0)
   _preAabb: Rectangle = new Rectangle(0, 0, 0, 0)
@@ -33,7 +32,7 @@ export class Collider extends NoRenderComponentX {
   onCollisionExit?: (other: Collider) => void
   onCollisionStay?: (other: Collider) => void
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(dt: number, draw?: Graphics) {}
+  update(dt: number, draw?: Graphics) { }
   getAABB() {
     return this._AABB
   }
@@ -60,8 +59,8 @@ export class Collider extends NoRenderComponentX {
 export class BoxCollider extends Collider {
   width: number
   height: number
-  get size() {
-    return new Size(this.width, this.height)
+  get size(): Size {
+    return this
   }
 
   set size(s: Size) {
@@ -73,16 +72,16 @@ export class BoxCollider extends Collider {
     if (!this.node) {
       return
     }
-    const { x, y } = this.offset || Vec2()
+    const { x, y } = this.offset || v2()
     const hw = this.width * 0.5
     const hh = this.height * 0.5
     const transform = getNodeToWorldTransformAR(this.node)
     const rectTrs = new Rectangle(x - hw, y - hh, this.width, this.height)
     const collider = this.getComponent(Collider)
-    collider._worldPoints[0] = transform.apply(Vec2(rectTrs.x, rectTrs.y))
-    collider._worldPoints[1] = transform.apply(Vec2(rectTrs.x, rectTrs.y + rectTrs.height))
-    collider._worldPoints[2] = transform.apply(Vec2(rectTrs.x + rectTrs.width, rectTrs.y + rectTrs.height))
-    collider._worldPoints[3] = transform.apply(Vec2(rectTrs.x + rectTrs.width, rectTrs.y))
+    collider._worldPoints[0] = transform.apply(v2(rectTrs.x, rectTrs.y))
+    collider._worldPoints[1] = transform.apply(v2(rectTrs.x, rectTrs.y + rectTrs.height))
+    collider._worldPoints[2] = transform.apply(v2(rectTrs.x + rectTrs.width, rectTrs.y + rectTrs.height))
+    collider._worldPoints[3] = transform.apply(v2(rectTrs.x + rectTrs.width, rectTrs.y))
 
     const listX = collider._worldPoints.map(({ x }) => x)
     const listY = collider._worldPoints.map(({ y }) => y)
@@ -92,8 +91,8 @@ export class BoxCollider extends Collider {
     collider._AABB.width = max(listX) - collider._AABB.x
     collider._AABB.height = max(listY) - collider._AABB.y
     if (draw) {
-      const drawList = collider._worldPoints.map(({ x, y }) => Vec2(x, app.screen.height - y))
-      draw.drawPolygon(drawList)
+      const drawList = collider._worldPoints.map(({ x, y }) => v2(x, app.screen.height - y))
+      draw.poly(drawList)
     }
   }
 }
@@ -111,8 +110,8 @@ export class CircleCollider extends Collider {
     if (draw) {
       const { x } = collider._worldPosition
       const y = app.screen.height - collider._worldPosition.y
-      draw.drawRect(x, y, 2, 2)
-      draw.drawCircle(x, y, collider._worldRadius)
+      draw.rect(x, y, 2, 2)
+      draw.circle(x, y, collider._worldRadius)
     }
     collider._preAabb = cloneRect(collider._AABB)
     collider._AABB.x = collider._worldPosition.x - collider._worldRadius
@@ -128,13 +127,13 @@ export class CircleCollider extends Collider {
 export class PolygonCollider extends Collider {
   _points: number[]
 
-  get points(): Vec2[] {
+  get points(): Point[] {
     const { x, y } = this.offset
-    const pointsList = chunk(this._points, 2).map(([px, py]) => Vec2(px + x, py + y))
+    const pointsList = chunk(this._points, 2).map(([px, py]) => v2(px + x, py + y))
     return pointsList
   }
 
-  set points(points: Vec2[]) {
+  set points(points: Point[]) {
     this._points = flatten(points.map(({ x, y }) => [x, y]))
   }
 
@@ -147,8 +146,8 @@ export class PolygonCollider extends Collider {
     collider._worldPoints = this.points.map((p) => transform.apply(p))
     // log(polyPoints);
     if (draw) {
-      const drawList = collider._worldPoints.map(({ x, y }) => Vec2(x, app.screen.height - y))
-      draw.drawPolygon(drawList)
+      const drawList = collider._worldPoints.map(({ x, y }) => v2(x, app.screen.height - y))
+      draw.poly(drawList)
     }
     const listX = collider._worldPoints.map(({ x }) => x)
     const listY = collider._worldPoints.map(({ y }) => y)
