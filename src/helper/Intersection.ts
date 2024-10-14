@@ -1,11 +1,5 @@
-import { v2 } from '@safe-engine/pixi'
+import { getDistance, v2 } from '@safe-engine/pixi'
 import { Point } from 'pixi.js'
-
-export function distance(point1: Point, point2: Point) {
-  const dx = point2.x - point1.x;
-  const dy = point2.y - point1.y;
-  return Math.sqrt(dx * dx + dy * dy);
-}
 
 export function pointInPolygon(pos: Point, polygon: Point[]) {
   let inside = false
@@ -123,7 +117,7 @@ export function polygonPolygon(pts1: Point[], pts2: Point[]) {
 }
 
 export function circleCircle(p1: Point, r1: number, p2: Point, r2: number) {
-  const d = distance(p1, p2)
+  const d = getDistance(p1, p2)
   return d < r1 + r2
 }
 
