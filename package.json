@@ -1,5 +1,5 @@
 {
-  "name": "@safe-engine/collider",
+  "name": "@safe-engine/pixi-collider",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",

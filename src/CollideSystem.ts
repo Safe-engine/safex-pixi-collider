@@ -28,6 +28,7 @@ export class CollideSystem implements System {
   debugGraphics: Graphics
   enabledDebugDraw = true
   enabled = true
+  colliderMatrix = [[true]]
 
   configure(event_manager: EventManager) {
     event_manager.subscribe(EventTypes.ComponentAdded, BoxCollider, onAddCollider)

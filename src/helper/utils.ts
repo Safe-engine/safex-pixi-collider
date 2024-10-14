@@ -9,6 +9,6 @@ export function shouldCollider(colA: Collider, colB: Collider) {
   if (groupA === undefined || groupB === undefined) {
     return true
   }
-  const { colliderMatrix } = GameWorld.Instance.systems.get(CollideSystem) as CollideSystem
+  const { colliderMatrix } = GameWorld.Instance.systems.get(CollideSystem)
   return colliderMatrix[groupA][groupB]
 }

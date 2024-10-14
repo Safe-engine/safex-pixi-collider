@@ -1,6 +1,13 @@
-import { Vec2 } from 'planck'
+import { v2 } from '@safe-engine/pixi'
+import { Point } from 'pixi.js'
 
-export function pointInPolygon(pos: Vec2, polygon: Vec2[]) {
+export function distance(point1: Point, point2: Point) {
+  const dx = point2.x - point1.x;
+  const dy = point2.y - point1.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+export function pointInPolygon(pos: Point, polygon: Point[]) {
   let inside = false
   const x = pos.x
   const y = pos.y
@@ -25,7 +32,7 @@ export function pointInPolygon(pos: Vec2, polygon: Vec2[]) {
   return inside
 }
 
-function lineLine(a1: Vec2, a2: Vec2, b1: Vec2, b2: Vec2): boolean {
+function lineLine(a1: Point, a2: Point, b1: Point, b2: Point): boolean {
   // jshint camel case:false
 
   const ua_t = (b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x)
@@ -44,7 +51,7 @@ function lineLine(a1: Vec2, a2: Vec2, b1: Vec2, b2: Vec2): boolean {
   return false
 }
 
-function linePolygon(A: Vec2, B: Vec2, polygon: Vec2[]) {
+function linePolygon(A: Point, B: Point, polygon: Point[]) {
   const length = polygon.length
   for (let i = 0; i < length; ++i) {
     const C = polygon[i]
@@ -58,7 +65,7 @@ function linePolygon(A: Vec2, B: Vec2, polygon: Vec2[]) {
   return false
 }
 
-export function pointLineDistance(point: Vec2, start: Vec2, end: Vec2, isSegment) {
+export function pointLineDistance(point: Point, start: Point, end: Point, isSegment) {
   let dx = end.x - start.x
   let dy = end.y - start.y
   const d = dx * dx + dy * dy
@@ -66,14 +73,14 @@ export function pointLineDistance(point: Vec2, start: Vec2, end: Vec2, isSegment
   let p
 
   if (!isSegment) {
-    p = Vec2(start.x + t * dx, start.y + t * dy)
+    p = v2(start.x + t * dx, start.y + t * dy)
   } else if (d) {
     if (t < 0) {
       p = start
     } else if (t > 1) {
       p = end
     } else {
-      p = Vec2(start.x + t * dx, start.y + t * dy)
+      p = v2(start.x + t * dx, start.y + t * dy)
     }
   } else {
     p = start
@@ -84,7 +91,7 @@ export function pointLineDistance(point: Vec2, start: Vec2, end: Vec2, isSegment
   return Math.sqrt(dx * dx + dy * dy)
 }
 
-export function polygonPolygon(pts1: Vec2[], pts2: Vec2[]) {
+export function polygonPolygon(pts1: Point[], pts2: Point[]) {
   let i = 0,
     l = 0
 
@@ -115,12 +122,12 @@ export function polygonPolygon(pts1: Vec2[], pts2: Vec2[]) {
   return false
 }
 
-export function circleCircle(p1: Vec2, r1: number, p2: Vec2, r2: number) {
-  const distance = Vec2.distance(p1, p2)
-  return distance < r1 + r2
+export function circleCircle(p1: Point, r1: number, p2: Point, r2: number) {
+  const d = distance(p1, p2)
+  return d < r1 + r2
 }
 
-export function polygonCircle(pts1: Vec2[], p2: Vec2, r2: number) {
+export function polygonCircle(pts1: Point[], p2: Point, r2: number) {
   if (pointInPolygon(p2, pts1)) {
     return true
   }
