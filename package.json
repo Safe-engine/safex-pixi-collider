@@ -1,6 +1,6 @@
 {
   "name": "@safe-engine/pixi-collider",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,8 +11,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@safe-engine/pixi": "workspace:*",
-    "entityx-ts": "workspace:*",
+    "@safe-engine/core": "*",
+    "@safe-engine/pixi": "*",
+    "entityx-ts": "*",
+    "lodash": "^4.17.21",
     "pixi.js": "^8.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
   }
 }
