@@ -71,3 +71,4 @@ output/
 .eslintignore
 .eslintrc
 tsconfig.json
+.github/

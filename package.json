@@ -1,6 +1,6 @@
 {
   "name": "@safe-engine/pixi-collider",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "collider plugin for @safe-engine/pixi",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
