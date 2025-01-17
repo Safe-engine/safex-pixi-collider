@@ -28,4 +28,4 @@ jobs:
       - name: Publish to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm publish --access public  # Adjust the access level if necessary
+        run: pnpm publish --no-git-checks --access public  # Adjust the access level if necessary
