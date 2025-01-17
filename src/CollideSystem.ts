@@ -1,6 +1,5 @@
 import { app, GameWorld, NodeComp } from '@safe-engine/pixi'
-import { EntityManager, EventTypes, System } from 'entityx-ts'
-import { EventManager } from 'entityx-ts'
+import { EntityManager, EventManager, EventTypes, System } from 'entityx-ts'
 import { Color, Graphics } from 'pixi.js'
 
 import { BoxCollider, CircleCollider, Collider, CollisionType, Contract, PolygonCollider } from './CollideComponent'
@@ -9,18 +8,7 @@ export function enabledDebugDraw(enable = true) {
   const collideSystem = GameWorld.Instance.systems.get(CollideSystem)
   collideSystem.enabledDebugDraw = enable
 }
-function onAddCollider({ entity, component }) {
-  console.log('ComponentAddedEvent', component)
-  const collider = entity.assign(new Collider(component))
-  collider.node = entity.getComponent(NodeComp)
-  component.node = entity.getComponent(NodeComp)
-  this.addCollider(collider)
-}
-function onRemoveCollider({ entity, component }) {
-  console.log('ComponentRemovedEvent', component)
-  const collider = entity.getComponent(Collider)
-  this.removeCollider.push(collider)
-}
+
 export class CollideSystem implements System {
   listColliders: Collider[] = []
   _contracts: Contract[] = []
@@ -31,12 +19,12 @@ export class CollideSystem implements System {
   colliderMatrix = [[true]]
 
   configure(event_manager: EventManager) {
-    event_manager.subscribe(EventTypes.ComponentAdded, BoxCollider, onAddCollider)
-    event_manager.subscribe(EventTypes.ComponentAdded, CircleCollider, onAddCollider)
-    event_manager.subscribe(EventTypes.ComponentAdded, PolygonCollider, onAddCollider)
-    event_manager.subscribe(EventTypes.ComponentRemoved, BoxCollider, onRemoveCollider)
-    event_manager.subscribe(EventTypes.ComponentRemoved, CircleCollider, onRemoveCollider)
-    event_manager.subscribe(EventTypes.ComponentRemoved, PolygonCollider, onRemoveCollider)
+    event_manager.subscribe(EventTypes.ComponentAdded, BoxCollider, this.onAddCollider.bind(this))
+    event_manager.subscribe(EventTypes.ComponentAdded, CircleCollider, this.onAddCollider.bind(this))
+    event_manager.subscribe(EventTypes.ComponentAdded, PolygonCollider, this.onAddCollider.bind(this))
+    event_manager.subscribe(EventTypes.ComponentRemoved, BoxCollider, this.onRemoveCollider.bind(this))
+    event_manager.subscribe(EventTypes.ComponentRemoved, CircleCollider, this.onRemoveCollider.bind(this))
+    event_manager.subscribe(EventTypes.ComponentRemoved, PolygonCollider, this.onRemoveCollider.bind(this))
     if (this.enabledDebugDraw) {
       this.debugGraphics = new Graphics()
       this.debugGraphics.setFillStyle({ color: new Color('white') })
@@ -157,5 +145,17 @@ export class CollideSystem implements System {
 
   removeCollider(colliderPhysics: Collider) {
     this.removeColliders.push(colliderPhysics)
+  }
+   onAddCollider({ entity, component }) {
+    console.log('ComponentAddedEvent', component)
+    const collider = entity.assign(new Collider(component))
+    collider.node = entity.getComponent(NodeComp)
+    component.node = entity.getComponent(NodeComp)
+    this.addCollider(collider)
+  }
+   onRemoveCollider({ entity, component }) {
+    console.log('ComponentRemovedEvent', component)
+    const collider = entity.getComponent(Collider)
+    this.removeCollider(collider)
   }
 }
