@@ -25,6 +25,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build project
         run: pnpm build
+      - name: Config pnpm
+        run: pnpm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
       - name: Publish to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
